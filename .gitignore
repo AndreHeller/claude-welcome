@@ -1,0 +1,13 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# Claude per-user state
+.claude/settings.local.json
+.claude/scheduled_tasks.lock
+
+# Logy / temp
+*.log
+.tmp/

@@ -1,0 +1,17 @@
+{
+  "name": "claude-welcome",
+  "owner": {
+    "name": "André Heller",
+    "email": "andre.heller@slevomat.cz"
+  },
+  "metadata": {
+    "description": "Onboarding pro Slevomat AI tooling — jeden plugin, který provede nového kolegu setupem Windows + WSL + Claude Code + Git + SSH + Slevomat internal tools. Hloubkový tutorial pro dev-facing uživatele."
+  },
+  "plugins": [
+    {
+      "name": "onboarding",
+      "source": "./plugins/onboarding",
+      "description": "Provede nového kolegu kompletním setupem Slevomat dev prostředí — WSL install, SSH keys, git config, registrace Slevomat marketplace, první projekt."
+    }
+  ]
+}
