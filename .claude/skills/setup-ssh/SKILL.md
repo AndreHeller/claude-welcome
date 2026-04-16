@@ -128,80 +128,128 @@ Každá služba má vlastní klíč. SSH config říká "pro github.com použij 
 - **Víc setup** (generovat víckrát, nahrát víckrát, napsat config).
 - SSH config se snadno rozbije (překlep = neautentizuje).
 
-### Doporučení pro tebe
+### Doporučení — Slevomat standard je Škola B (per-service)
 
-Pokud jsi **úplný nováček**: jdi **Škola A** (jeden klíč). Stačí pro 95 % dev práce. Začni jednoduše, přidej complexity až bude důvod.
+Ve Slevomat týmu používáme **per-service klíče** jako standard — každá služba (GitHub, GitLab) má vlastní klíč + SSH config. Výhody izolace a granulárního revoke stojí za 2 minuty navíc při setupu.
 
-Pokud jsi **trochu zkušenější** nebo **security-paranoid**: **Škola B**. Tohle je Slevomat standard (viz Andreho setup `~/.ssh/github`, `~/.ssh/gitlab`, `~/.ssh/config`).
+Dál v tomto skillu **postupujeme podle Školy B** (per-service). Pokud chceš jednodušší variantu (jeden klíč pro vše), řekni a přepnu na Školu A.
 
-Dál v tomto skillu **budu postupovat podle Školy A** (jeden klíč), abychom to měli co nejjednodušší. Pokud chceš Školu B, řekni a přepnu.
+## Část 4: Praktický setup — generace per-service klíčů
 
-## Část 4: Praktický setup — generace klíče
-
-Zkontroluj nejdřív jestli už klíč nemáš:
+Zkontroluj nejdřív co už máš:
 
 ```bash
 ls -la ~/.ssh/
 ```
 
-Pokud vidíš `id_ed25519` a `id_ed25519.pub`, máš klíč. **Použijeme ho** (neděláme nový), jen ho uploadne — pokračuj na Část 5.
+Pokud vidíš `github` + `github.pub` + `gitlab` + `gitlab.pub` + `config`, máš klíče. Ověř a pokračuj na Část 5 (upload).
 
-Pokud `.ssh/` je prázdné nebo obsahuje jen `known_hosts`, vygenerujeme nový:
+Pokud `.ssh/` je prázdné nebo obsahuje jen `known_hosts`, vygenerujeme oba klíče:
+
+### Klíč pro GitHub
 
 ```bash
-ssh-keygen -t ed25519 -C "tvuj.email@slevomat.cz" -f ~/.ssh/id_ed25519
+ssh-keygen -t ed25519 -C "tvuj.email@slevomat.cz" -f ~/.ssh/github
+```
+
+### Klíč pro GitLab
+
+```bash
+ssh-keygen -t ed25519 -C "tvuj.email@slevomat.cz" -f ~/.ssh/gitlab
 ```
 
 Vysvětlení flagů:
 - `-t ed25519` — algoritmus. **ed25519** je moderní, kratší, rychlejší, bezpečnější než starší RSA. Použij ho, není důvod pro RSA v 2026.
-- `-C "email"` — komentář. Neovlivňuje kryptografii, ale GitHub/GitLab ti v UI ukazuje "klíč s popisem X" — dobré pro identifikaci (*"to byl ten z WSL notebooku"*).
-- `-f ~/.ssh/id_ed25519` — kam uložit. Můžeš vynechat (defaultní cesta), ale explicit je jasnější.
+- `-C "email"` — komentář. Neovlivňuje kryptografii, ale GitHub/GitLab ti v UI ukazuje "klíč s popisem X" — dobré pro identifikaci.
+- `-f ~/.ssh/github` (resp. `gitlab`) — pojmenujeme klíč podle služby. SSH default hledá `id_ed25519`, proto potřebujeme SSH config (krok níže) aby věděl který klíč pro který server.
 
 **Passphrase** (volitelné heslo na klíč):
 - **Prázdné (ENTER, ENTER)** = pohodlí. Klíč se dá použít bez dotazu. Pro většinu dev práce OK.
-- **S passphrase** = větší bezpečnost. Pokud ti někdo ukradne privátní klíč, potřebuje ještě heslo. Ale musíš ho psát často, nebo použít ssh-agent (cache hesla v paměti na sezení).
+- **S passphrase** = větší bezpečnost. Pokud ti někdo ukradne privátní klíč, potřebuje ještě heslo. Ale musíš ho psát často, nebo použít ssh-agent.
 
-Doporučení pro start: **prázdné** (simpler). Později můžeš přepnout na s passphrase (`ssh-keygen -p -f ~/.ssh/id_ed25519`).
+Doporučení pro start: **prázdné** (simpler). Později můžeš přepnout na s passphrase (`ssh-keygen -p -f ~/.ssh/github`).
 
-Po generaci vidíš:
+### SSH config — mapování klíč → služba
 
-```
-Your identification has been saved in /home/<jmeno>/.ssh/id_ed25519
-Your public key has been saved in /home/<jmeno>/.ssh/id_ed25519.pub
-```
-
-## Část 5: Upload public klíče na GitLab + GitHub
-
-Musíš nahrát `.pub` (veřejný) na obě služby. Privátní klíč NIKDY neukazujeme nikomu.
+Bez configue by SSH nevěděl který klíč pro který server (protože klíče se nejmenují default `id_ed25519`). Vytvoř `~/.ssh/config`:
 
 ```bash
-# Vypíše veřejný klíč na stdout
-cat ~/.ssh/id_ed25519.pub
+cat > ~/.ssh/config << 'EOF'
+Host github.com
+    HostName github.com
+    User git
+    IdentityFile ~/.ssh/github
+    AddKeysToAgent yes
+
+Host gitlab.com
+    HostName gitlab.com
+    User git
+    IdentityFile ~/.ssh/gitlab
+    AddKeysToAgent yes
+EOF
+chmod 644 ~/.ssh/config
 ```
 
-Výstup vypadá takto:
+Vysvětlení:
+- **`Host github.com`** — pattern match: když SSH vidí `git@github.com`, použije tuto sekci.
+- **`IdentityFile ~/.ssh/github`** — který privátní klíč nabídnout serveru.
+- **`AddKeysToAgent yes`** — automaticky přidá klíč do ssh-agent (nemusíš ručně `ssh-add`).
+- **`User git`** — GitHub/GitLab vždy používají user `git` (ne tvoje jméno).
+
+Po generaci by měl `~/.ssh/` vypadat takto:
+
 ```
-ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI... tvuj.email@slevomat.cz
+~/.ssh/
+├── github          (privátní klíč pro GitHub)
+├── github.pub      (veřejný klíč pro GitHub)
+├── gitlab          (privátní klíč pro GitLab)
+├── gitlab.pub      (veřejný klíč pro GitLab)
+├── config          (mapování klíč → server)
+└── known_hosts     (fingerprints, vytvoří se při prvním ssh -T)
 ```
 
-**Celý tenhle řetězec** (od `ssh-ed25519` po email) je public key. Zkopíruj ho.
+### Ověření permissions
+
+```bash
+chmod 700 ~/.ssh
+chmod 600 ~/.ssh/github ~/.ssh/gitlab
+chmod 644 ~/.ssh/github.pub ~/.ssh/gitlab.pub ~/.ssh/config
+```
+
+SSH je **striktní** na permissions — pokud privátní klíč má příliš volné permissions (readable pro ostatní), SSH ho odmítne použít.
+
+## Část 5: Upload public klíčů na GitLab + GitHub
+
+Musíš nahrát **každý .pub na odpovídající službu**. Privátní klíče (bez `.pub`) NIKDY neukazujeme nikomu.
 
 ### Upload do GitLab
 
+```bash
+cat ~/.ssh/gitlab.pub
+```
+
+Zkopíruj celý výstup (od `ssh-ed25519` po email). Pak:
+
 1. Otevři: https://gitlab.com/-/user_settings/ssh_keys
-2. **Key**: vlož public key z `cat`.
-3. **Title**: dej popisný — např. `WSL laptop (Lenovo X1)`.
+2. **Key**: vlož public key z `cat ~/.ssh/gitlab.pub`.
+3. **Title**: dej popisný — např. `WSL laptop (GitLab)`.
 4. **Usage type**: `Authentication & Signing` (default).
-5. **Expires at**: volitelné (prázdné = nikdy). Pro dev stroje není důvod expirovat.
+5. **Expires at**: volitelné (prázdné = nikdy).
 6. **Add key**.
 
 ### Upload do GitHub
 
+```bash
+cat ~/.ssh/github.pub
+```
+
+Zkopíruj výstup. Pak:
+
 1. Otevři: https://github.com/settings/keys
 2. **New SSH key**.
-3. **Title**: stejně — `WSL laptop (Lenovo X1)`.
+3. **Title**: `WSL laptop (GitHub)`.
 4. **Key type**: `Authentication Key`.
-5. **Key**: vlož public key.
+5. **Key**: vlož public key z `cat ~/.ssh/github.pub`.
 6. **Add SSH key**.
 
 ## Část 6: Test spojení
