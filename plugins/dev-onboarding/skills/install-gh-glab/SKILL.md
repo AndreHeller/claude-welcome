@@ -92,7 +92,7 @@ glab auth login
 
 Podobný flow:
 1. **GitLab.com** (ne self-hosted).
-2. **HTTPS** nebo **SSH** — **SSH**.
+2. **HTTPS** nebo **Token** — vyber **Token** (v glab CLI se SSH varianta jmenuje "Token", ne "SSH" — matoucí, ale je to to samé — autentizuje přes tvůj SSH klíč).
 3. Přes browser → OAuth → uloží token.
 
 Ověř:
