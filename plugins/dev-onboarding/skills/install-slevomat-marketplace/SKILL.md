@@ -43,10 +43,10 @@ claude --version
 Pokud `command not found`:
 
 ```bash
-curl -fsSL https://claude.ai/install.sh | bash
-source ~/.bashrc
-claude --version    # teď by mělo fungovat
+echo "Stahuji a instaluji Claude Code CLI (~30-60 sekund, nic nevypisuje — čekej)..." && curl -fsSL https://claude.ai/install.sh | bash && echo "Hotovo!" && source ~/.bashrc && claude --version
 ```
+
+**POZOR**: příkaz **dlouho nic nevypisuje** (30-60 sekund ticho). Vypadá jako že se zasekl — ale na pozadí stahuje ~50 MB binárku a instaluje. **Čekej** dokud neuvidíš "Hotovo!" a verzi CLI. Neklikej Ctrl+C.
 
 Po instalaci se **nemusíš znovu přihlašovat** — CLI sdílí auth session s VS Code extension (oba čtou `~/.claude/`).
 
