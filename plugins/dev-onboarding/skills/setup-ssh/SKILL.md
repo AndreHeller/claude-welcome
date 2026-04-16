@@ -234,7 +234,7 @@ Zkopíruj celý výstup (od `ssh-ed25519` po email). Pak:
 2. **Key**: vlož public key z `cat ~/.ssh/gitlab.pub`.
 3. **Title**: dej popisný — např. `WSL laptop (GitLab)`.
 4. **Usage type**: `Authentication & Signing` (default).
-5. **Expires at**: volitelné (prázdné = nikdy).
+5. **Expires at**: **POZOR — GitLab automaticky předvyplní expiraci** (typicky 1 rok). Pokud chceš klíč bez expirace (doporučeno pro dev stroje), **smaž datum z pole** — nech ho prázdné.
 6. **Add key**.
 
 ### Upload do GitHub
