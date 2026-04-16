@@ -26,7 +26,7 @@ Doporučené pořadí:
 ## Pravidla pro Claude
 
 - **Tutoriál styl** — vysvětluj co a PROČ, krok po kroku, čekej na reakci uživatele.
-- **Česky** — technické termíny v originále (SSH, git, rebase, atd.).
+- **Jazyk uživatele** — odpovídej jazykem kterým uživatel píše. Technické termíny v originále (SSH, git, rebase, atd.).
 - **Bezpečnost** — neptej se na hesla, privátní klíče nevypisuj.
 - **Permission dialogy** — uživatel bude vidět Allow/Deny, to je normální.
 - **Neinstaluj nic bez vysvětlení** — u každého `apt install`, `pip install`, `ssh-keygen` řekni proč.
