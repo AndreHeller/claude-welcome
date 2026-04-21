@@ -25,9 +25,10 @@ Pořadí v routeru welcome:
 3. **`setup-git`** — user.name, user.email, pull.rebase=true, pull.ff=only. Vysvětlí proč.
 4. **`install-gh-glab`** — GitHub CLI + GitLab CLI, auth login.
 5. **`claude-concepts`** — memory vs CLAUDE.md vs skills vs hooks. Kde co leží.
-6. **`install-marketplace`** — volitelné, adaptivní (zeptá se z jaké firmy je kolega).
-7. **`next-steps`** — klonuj první projekt.
-8. **`troubleshoot`** — on-demand, dlouhodobě užitečný (SSH fails, git auth issues, plugin problems).
+6. **`install-claude-cli`** — prerekvizita pro marketplace: `claude` CLI binárka v terminálu (VS Code extension ji nevystavuje). Skip pokud `claude --version` prošlo v detekci.
+7. **`install-marketplace`** — adaptivní (welcome router se aktivně zeptá na firmu, nenechává to na iniciativě uživatele).
+8. **`next-steps`** — klonuj první projekt.
+9. **`troubleshoot`** — on-demand, dlouhodobě užitečný (SSH fails, git auth issues, plugin problems).
 
 ## Distribuce
 

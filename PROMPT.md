@@ -38,4 +38,20 @@ Cíl: po dokončení mám funkční WSL + Ubuntu + Unix user + VS Code v WSL mod
 Kolega bude v Claude Code v WSL. Tam dál pokračuje instalací `dev-onboarding` pluginu:
 
 - **Slevomat kolega**: admin má plugin jako *Installed by default* v Team marketplace → plugin je už aktivní, stačí napsat "proveď mě onboardingem".
-- **Ostatní / open-source**: `claude plugin marketplace add https://github.com/AndreHeller/claude-code-onboarding.git` + `claude plugin install dev-onboarding`, pak "proveď mě onboardingem".
+- **Ostatní / open-source**: nejdřív nainstaluj **`claude` CLI binárku** v Ubuntu terminálu (VS Code extension ji v terminálu nevystavuje):
+
+  ```bash
+  # Pokud `claude --version` hlásí command not found:
+  curl -fsSL https://claude.ai/install.sh | bash
+  echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc && source ~/.bashrc
+  claude --version
+  ```
+
+  Pak registrace marketplace + instalace pluginu:
+
+  ```bash
+  claude plugin marketplace add https://github.com/AndreHeller/claude-code-onboarding.git
+  claude plugin install dev-onboarding
+  ```
+
+  Nakonec v Claude Code chatu: *"proveď mě onboardingem"*.

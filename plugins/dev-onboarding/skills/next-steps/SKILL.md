@@ -24,11 +24,28 @@ Platí pro jakýkoliv dev projekt (web, data pipeline, ML, cokoliv):
 
 ### 1. Klonuj repo do ~/dev/
 
+**Potřebuješ SSH clone URL tvého konkrétního projektu.** Níže jsou komentované příklady — **nekopíruj je doslova**, nahraď svým URL.
+
 ```bash
 cd ~/dev
-git clone <url-tvého-repa>   # SSH (git@...) je preferované, máš klíče nastavené
-cd <název-projektu>
+
+# Příklady SSH URL (formát — nahraď org/group/repo tím správným):
+# git clone git@github.com:<org>/<repo>.git                     # GitHub obecně
+# git clone git@gitlab.com:<group>/<subgroup>/<projekt>.git     # GitLab obecně
+# git clone git@gitlab.com:slevomat/bi/dbt.git                  # příklad: Slevomat dbt repo
+
+cd <nazev-slozky>   # složka co git clone vytvořil (obvykle = název repa)
 ```
+
+**Kde najít správné URL pro tvůj projekt:**
+
+- **GitHub**: otevři repo v browseru → zelené tlačítko **`Code`** → záložka **`SSH`** → zkopíruj (formát `git@github.com:org/repo.git`).
+- **GitLab**: otevři repo → modré tlačítko **`Clone`** → sekce **`Clone with SSH`** → zkopíruj (formát `git@gitlab.com:group/project.git`).
+- **Nevíš, který projekt je ten správný**: **zeptej se team-leada nebo buddyho**. Každý tým má 1-3 primární repa pro onboarding nového člena (typicky dbt projekt, BI aplikace, nebo core service) — task ticket ti řekne, na kterém budeš pracovat.
+
+**Proč SSH a ne HTTPS**: máš `setup-ssh` za sebou, klíče fungují. HTTPS by tě nutilo zadávat token při každém `git push` nebo konfigurovat credential helper. SSH je pro dev práci ergonomicky lepší.
+
+**Pokud clone selže s `Permission denied (publickey)`**: SSH key není registrovaný na té platformě, nebo není v ssh-agent. Spusť skill **`troubleshoot`**.
 
 ### 2. Otevři ve VS Code
 

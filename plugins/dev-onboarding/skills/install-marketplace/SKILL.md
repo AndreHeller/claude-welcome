@@ -7,6 +7,20 @@ description: "ONBOARDING volitelný krok — registrace firemního privátního 
 
 Pokud tvůj tým má **privátní Claude Code plugin marketplace** (s org-wide konvencemi, naming, git workflow, atd.), tady ho nainstalujeme.
 
+## Prerequisites
+
+- **Funkční `claude` CLI v terminálu** — plugin příkazy (`claude plugin marketplace add ...`) fungují **jen v CLI binárce**, ne v chat panelu VS Code extension. Ověř:
+
+  ```bash
+  claude --version
+  ```
+
+  Pokud `command not found` → spusť nejdřív skill **`install-claude-cli`** a pak se sem vrať.
+
+- **SSH key registrovaný v GitLabu** (pro Slevomat marketplace — repo se klonuje přes SSH) — viz skill `setup-ssh`.
+
+> **⚠ Důležité**: příkazy `claude plugin ...` v této skill **NESPOUŠTĚJ v Claude Code chat panelu** — panel nemá plugin slash commandy. Všechno patří do **bash terminálu** (Ctrl+backtick ve VS Code, nebo Ubuntu ze Start menu).
+
 ## Krok 1: Z jaké jsi firmy?
 
 **Zeptej se uživatele**: *"Pracuješ pro konkrétní firmu, která má vlastní Claude plugin marketplace? Pokud ano, řekni mi název firmy."*
@@ -15,7 +29,7 @@ Pokud tvůj tým má **privátní Claude Code plugin marketplace** (s org-wide k
 
 Slevomat má privátní marketplace na GitLabu s pluginem `bi` (git workflow konvence, naming patterns, auto-update check).
 
-**Prerequisites**: SSH key registrovaný v GitLabu (viz skill `setup-ssh`).
+**Prerequisites pro Slevomat**: SSH key registrovaný v GitLabu (viz `setup-ssh`) + `claude` CLI v terminálu (viz `install-claude-cli`).
 
 Instalace přes Claude Code CLI v terminálu:
 

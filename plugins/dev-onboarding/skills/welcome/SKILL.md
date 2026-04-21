@@ -29,8 +29,11 @@ git config --get pull.rebase 2>/dev/null | grep -q true && echo "✓ pull.rebase
 gh auth status 2>&1 | grep -q "Logged in" && echo "✓ gh OK" || echo "✗ gh"
 glab auth status 2>&1 | grep -q "Logged in" && echo "✓ glab OK" || echo "✗ glab"
 
-# 5. Claude plugin marketplace
-claude plugin marketplace list 2>/dev/null | head -5 || echo "(žádné custom marketplaces)"
+# 5. Claude Code CLI binárka v terminálu (≠ VS Code extension!)
+claude --version 2>/dev/null | head -1 && echo "✓ claude CLI OK" || echo "✗ claude CLI missing"
+
+# 6. Claude plugin marketplace (funguje jen pokud je CLI nainstalované)
+claude plugin marketplace list 2>/dev/null | head -5 || echo "(žádné custom marketplaces, nebo CLI chybí)"
 ```
 
 ## Krok 2: Routing — kam dál
@@ -53,8 +56,18 @@ Pokud `uname -s` vrátilo `Linux` nebo `Darwin` (macOS), jedeme dál. Podle toho
 | ✗ git user.email / pull.rebase | `setup-git` |
 | ✗ gh / glab | `install-gh-glab` |
 | nikdy jsi nepoužil Claude Code | `claude-concepts` |
-| (chceš) firemní marketplace | `install-marketplace` |
+| ✗ claude CLI missing | `install-claude-cli` (prerekvizita pro marketplace) |
+| patříš do firmy s vlastním marketplace | `install-marketplace` |
 | vše ✓ | `next-steps` (klonuj projekt) |
+
+### Aktivní otázka na firemní marketplace
+
+Po zobrazení dashboardu se **aktivně zeptej uživatele** (nenech ho hádat, co je opt-in):
+
+> *"Patříš do firmy, která má vlastní Claude plugin marketplace? Například Slevomat má privátní GitLab marketplace s `bi` pluginem (git-workflow konvence, naming patterns, audit skills). Pokud ano, řekni mi název firmy — nainstalujeme ti org-wide pluginy. Pokud ne nebo nevíš, přeskočíme rovnou na klonování projektu."*
+
+- **Odpověď = "ano, <firma>"** → pokud detekce ukázala `✗ claude CLI missing`, nejdřív `install-claude-cli`, pak `install-marketplace`.
+- **Odpověď = "ne / nevím / přeskoč"** → rovnou na `next-steps`.
 
 ### Scénář C: Všechno ✓
 Výborně, máš hotovo. Pokračuj rovnou na **`next-steps`** — klonování konkrétního projektu.
@@ -68,8 +81,9 @@ Pokud je detekce "všude ✗", jedeme v pořadí:
 3. **`setup-git`** — user.name, user.email, `pull.rebase=true`, `pull.ff=only`. Vysvětlím **proč** (lineární historie, fast-forward merge).
 4. **`install-gh-glab`** — GitHub CLI (`gh`) + GitLab CLI (`glab`), auth login přes browser.
 5. **`claude-concepts`** — **DŮLEŽITÉ**: rozdíl memory vs CLAUDE.md vs skills vs hooks. Kde co leží, co modifikovat ručně.
-6. **`install-marketplace`** — **volitelné**: registrace firemního privátního marketplace. Adaptivní (zeptá se, z jaké jsi firmy).
-7. **`next-steps`** — klonuj konkrétní projekt (dbt, Streamlit, atd.) a přepni se na něj.
+6. **`install-claude-cli`** — **prerekvizita pro marketplace**: instalace `claude` CLI binárky v terminálu (VS Code extension ji nevystavuje). Přeskoč pokud `claude --version` v detekci prošlo.
+7. **`install-marketplace`** — **adaptivní**: registrace firemního privátního marketplace. Welcome router se aktivně ptá na firmu, nenechává to na iniciativě uživatele.
+8. **`next-steps`** — klonuj konkrétní projekt (dbt, Streamlit, atd.) a přepni se na něj.
 
 ## Troubleshooting kdykoli později
 
